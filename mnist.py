@@ -24,12 +24,13 @@ def main():
                   metrics=['accuracy'])
     tensorboard = keras.callbacks.TensorBoard(
         log_dir=".mnist_log/{}".format(time()))
+    data_save = keras.callbacks.CSVLogger('.mnist_log/log.csv', append=True, separator=',')
     model_save = keras.callbacks.ModelCheckpoint('.mnist_log/{epoch:05}.h5',
                                                  period=10)
     model.fit(train_images,
               train_labels,
               epochs=100,
-              callbacks=[model_save, tensorboard],
+              callbacks=[model_save, tensorboard, data_save],
               validation_data=(test_images, test_labels))
 
 
