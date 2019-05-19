@@ -53,5 +53,6 @@ def main():
               callbacks=[tensorboard, model_save, data_save],
               validation_data=(test_images, test_labels))
 
-    if __name__ == "__main__":
-        main()
+
+if __name__ == "__main__":
+    main()
