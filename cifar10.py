@@ -39,7 +39,7 @@ def main():
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
-    file_path = ".{}_log/{}".format(__file__[2:].strip(".py"), time())
+    file_path = ".{}_log/{}".format(__file__.strip("./").strip(".py"), time())
     tensorboard = keras.callbacks.TensorBoard(log_dir=file_path)
     data_save = keras.callbacks.CSVLogger('{}/log.csv'.format(file_path),
                                           append=True,
