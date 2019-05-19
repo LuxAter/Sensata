@@ -4,8 +4,8 @@ from time import time
 
 import tensorflow as tf
 from tensorflow import keras
-# import numpy as np
-# import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
 
 import data.cifar10
 
@@ -46,6 +46,8 @@ def main():
                                           separator=',')
     model_save = keras.callbacks.ModelCheckpoint('.cifar10_log/{epoch:05}.h5',
                                                  period=10)
+    print("HELLO")
+    print(train_images, train_labels)
     model.fit(train_images,
               train_labels,
               epochs=100,

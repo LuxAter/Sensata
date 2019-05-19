@@ -24,7 +24,6 @@ def load_train_data():
         X_train[begin:end, :] = x_raw
         Y_train[begin:end] = y_raw
         begin = end
-    print(Y_train, util.class_encoding(Y_train))
     return X_train, Y_train, util.class_encoding(Y_train)
 
 
