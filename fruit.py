@@ -49,19 +49,17 @@ def main():
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
-    tensorboard = keras.callbacks.TensorBoard(
-        log_dir=".fruit_log/{}".format(time()))
-    data_save = keras.callbacks.CSVLogger('.fruit_log/log.csv',
+    file_path = ".{}_log/{}".format(__file__[2:].strip(".py"), time())
+    tensorboard = keras.callbacks.TensorBoard(log_dir=file_path)
+    data_save = keras.callbacks.CSVLogger('{}/log.csv'.format(file_path),
                                           append=True,
                                           separator=',')
-    model_save = keras.callbacks.ModelCheckpoint('.fruit_log/{epoch:05}.h5',
-                                                 period=10)
+    model_save = keras.callbacks.ModelCheckpoint(
+        '{}/{{epoch:05}}.h5'.format(file_path), period=10)
     model.summary()
-    # model.fit_generator(train_gen, epochs=100)
-    # model.fit(train_x, train_y, epochs=10)
     model.fit_generator(train_gen, steps_per_epoch=10,
                         epochs=100,
-                        callbacks=[model_save, tensorboard, data_save],
+                        callbacks=[tensorboard, model_save, data_save],
                         validation_data=test_gen)
 
 

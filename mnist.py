@@ -22,15 +22,18 @@ def main():
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
-    tensorboard = keras.callbacks.TensorBoard(
-        log_dir=".mnist_log/{}".format(time()))
-    data_save = keras.callbacks.CSVLogger('.mnist_log/log.csv', append=True, separator=',')
-    model_save = keras.callbacks.ModelCheckpoint('.mnist_log/{epoch:05}.h5',
-                                                 period=10)
+    file_path = ".{}_log/{}".format(__file__[2:].strip(".py"), time())
+    tensorboard = keras.callbacks.TensorBoard(log_dir=file_path)
+    data_save = keras.callbacks.CSVLogger('{}/log.csv'.format(file_path),
+                                          append=True,
+                                          separator=',')
+    model_save = keras.callbacks.ModelCheckpoint(
+        '{}/{{epoch:05}}.h5'.format(file_path), period=10)
+    model.summary()
     model.fit(train_images,
               train_labels,
               epochs=100,
-              callbacks=[model_save, tensorboard, data_save],
+              callbacks=[tensorboard, model_save, data_save],
               validation_data=(test_images, test_labels))
 
 
