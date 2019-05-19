@@ -6,6 +6,8 @@ import gzip
 import shutil
 import pickle
 import numpy as np
+from tensorflow import keras
+import matplotlib.pyplot as plt
 
 
 def unpickle(file):
@@ -87,3 +89,44 @@ def kaggle_and_extract(dest, url, verbose=True, filename=None):
                 with open('.'.join(filepath.split('.')[:-1]), 'wb') as bin_out:
                     shutil.copyfileobj(bin_data, bin_out)
             print("   Extracted {}".format(filepath))
+
+
+class Generator(keras.utils.Sequence):
+
+    def __init__(self,
+                 files,
+                 labels,
+                 batch_size=32,
+                 dim=(32, 32),
+                 n_classes=10,
+                 shuffle=True):
+        self.dim = dim
+        self.batch_size = batch_size
+        self.labels = labels
+        self.files = files
+        self.n_classes = n_classes
+        self.shuffle = shuffle
+        self.on_epoch_end()
+
+    def __len__(self):
+        return int(np.floor(len(self.files) / self.batch_size))
+
+    def __getitem__(self, idx):
+        indexes = self.indexes[idx * self.batch_size:(idx + 1) *
+                               self.batch_size]
+        files_tmp = [self.files[k] for k in indexes]
+        x, y = self.__data(files_tmp)
+        return x, y
+
+    def on_epoch_end(self):
+        self.indexes = np.arange(len(self.files))
+        if self.shuffle == True:
+            np.random.shuffle(self.indexes)
+
+    def __data(self, files):
+        x = np.empty((self.batch_size, *self.dim))
+        y = np.empty((self.batch_size), dtype=int)
+        for i, ID in enumerate(files):
+            x[i,] = plt.imread(self.files[i]).astype(np.float64) / 255.0
+            y[i] = self.labels[i]
+        return x, y

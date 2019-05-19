@@ -44,38 +44,35 @@ def load_class_name():
     ]
 
 
-class generator(keras.utils.Sequence):
-
-    def __init__(self, batch_size, validation=False):
-        util.kaggle_and_extract("./dataset/FRUITS", "moltean/fruits")
-        file_path = './dataset/FRUITS/fruit-360/Training' if not validation else './dataset/FRUITS/fruit-360/Test'
-        keys = [
-            str(x) for x in sorted(
-                Path(file_path).glob('*'))
+def generator(batch_size, validation=False):
+    util.kaggle_and_extract("./dataset/FRUITS", "moltean/fruits")
+    if validation:
+        keys_test = [
+            str(x)
+            for x in sorted(Path('./dataset/FRUITS/fruits-360/Test').glob('*'))
         ]
-        self.x = list(
-            sorted(
-                Path(file_path).glob("**/*.jpg")))
-        self.y = list(
-            [keys.index('/'.join(str(x).split('/')[:-1])) for x in self.x])
-        self.batch_size = batch_size
-        self.size = len(self.x)
-        self.inds = np.random.shuffle(np.arange(len(self.x)))
-
-    def __len__(self):
-        print("B")
-        return int(np.ceil(len(self.x) / float(self.batch_size)))
-
-    def on_epoch_end(self):
-        self.inds = np.random.shuffle(np.arange(len(self.x)))
-
-    def __getitem__(self, idx):
-        print("A")
-        batch = self.inds[idx * self.batch_size: (idx+1) * self.batch_size]
-        # batch = np.random.choice(self.inds, self.batch_size, False)
-        # self.inds = [x for x in self.inds if x not in batch]
-        batch_x, batch_y = np.asarray([
-            plt.imread(self.x[i]).astype(np.float64) / 255.0 for i in batch
-        ]), np.asarray([self.y[i] for i in batch])
-        print(batch_x, batch_y)
-        return batch_x, batch_y
+        X_test = sorted(
+            Path('./dataset/FRUITS/fruits-360/Test').glob("**/*.jpg"))
+        Y_test = [
+            keys_test.index('/'.join(str(x).split('/')[:-1])) for x in X_test
+        ]
+        return util.Generator(X_test,
+                              Y_test,
+                              batch_size=batch_size,
+                              dim=(100, 100, 3),
+                              n_classes=len(keys_test))
+    else:
+        keys_train = [
+            str(x) for x in sorted(
+                Path('./dataset/FRUITS/fruits-360/Training').glob('*'))
+        ]
+        X_train = sorted(
+            Path('./dataset/FRUITS/fruits-360/Training').glob("**/*.jpg"))
+        Y_train = [
+            keys_train.index('/'.join(str(x).split('/')[:-1])) for x in X_train
+        ]
+        return util.Generator(X_train,
+                              Y_train,
+                              batch_size=batch_size,
+                              dim=(100, 100, 3),
+                              n_classes=len(keys_train))
