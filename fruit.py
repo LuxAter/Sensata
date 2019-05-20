@@ -57,7 +57,7 @@ def main():
     model_save = keras.callbacks.ModelCheckpoint(
         '{}/{{epoch:05}}.h5'.format(file_path), period=10)
     model.summary()
-    model.fit_generator(train_gen, steps_per_epoch=10,
+    model.fit_generator(train_gen,
                         epochs=100,
                         callbacks=[tensorboard, model_save, data_save],
                         validation_data=test_gen)
