@@ -7,6 +7,8 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
+from tensorflow.keras.layers import Dense, Activation, Dropout, Flatten, Conv2D, MaxPooling2D
+
 import data.cifar10
 
 
@@ -15,27 +17,54 @@ def main():
                                       _) = data.cifar10.load_data()
     names = data.cifar10.load_class_name()
     model = keras.Sequential([
-        keras.layers.Conv2D(32, (3, 3),
-                            input_shape=(train_images.shape[1:]),
-                            padding='same'),
-        keras.layers.Activation('relu'),
-        keras.layers.Conv2D(32, (3, 3)),
-        keras.layers.Activation('relu'),
-        keras.layers.MaxPooling2D(pool_size=(2, 2)),
-        keras.layers.Dropout(0.25),
-        keras.layers.Conv2D(64, (3, 3), padding='same'),
-        keras.layers.Activation('relu'),
-        keras.layers.Conv2D(64, (3, 3)),
-        keras.layers.Activation('relu'),
-        keras.layers.MaxPooling2D(pool_size=(2, 2)),
-        keras.layers.Dropout(0.25),
-        keras.layers.Flatten(),
-        keras.layers.Dense(512),
-        keras.layers.Activation('relu'),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(len(names)),
-        keras.layers.Activation('softmax')
+        Conv2D(64, (3, 3),
+               intput_shape=(32, 32, 3),
+               padding='same',
+               activation='relu'),
+        Conv2D(64, (3, 3), activation='relu', padding='same'),
+        MaxPooling2D(pool_size(2, 2), strides=(2, 2)),
+        Conv2D(128, (3, 3), activation='relu', padding='same'),
+        Conv2D(128, (3, 3), activation='relu', padding='same'),
+        MaxPooling2D(pool_size(2, 2), strides=(2, 2)),
+        Conv2D(256, (3, 3), activation='relu', padding='same'),
+        Conv2D(256, (3, 3), activation='relu', padding='same'),
+        Conv2D(256, (3, 3), activation='relu', padding='same'),
+        MaxPooling2D(pool_size(2, 2), strides=(2, 2)),
+        Conv2D(512, (3, 3), activation='relu', padding='same'),
+        Conv2D(512, (3, 3), activation='relu', padding='same'),
+        Conv2D(512, (3, 3), activation='relu', padding='same'),
+        MaxPooling2D(pool_size(2, 2), strides=(2, 2)),
+        Conv2D(512, (3, 3), activation='relu', padding='same'),
+        Conv2D(512, (3, 3), activation='relu', padding='same'),
+        Conv2D(512, (3, 3), activation='relu', padding='same'),
+        MaxPooling2D(pool_size(2, 2), strides=(2, 2)),
+        Flatten(),
+        Dense(4096, activation='relu'),
+        Dense(4096, activation='relu'),
+        Dense(len(names), activation='relu')
     ])
+    # model = keras.Sequential([
+    #     keras.layers.Conv2D(32, (3, 3),
+    #                         input_shape=(train_images.shape[1:]),
+    #                         padding='same'),
+    #     keras.layers.Activation('relu'),
+    #     keras.layers.Conv2D(32, (3, 3)),
+    #     keras.layers.Activation('relu'),
+    #     keras.layers.MaxPooling2D(pool_size=(2, 2)),
+    #     keras.layers.Dropout(0.25),
+    #     keras.layers.Conv2D(64, (3, 3), padding='same'),
+    #     keras.layers.Activation('relu'),
+    #     keras.layers.Conv2D(64, (3, 3)),
+    #     keras.layers.Activation('relu'),
+    #     keras.layers.MaxPooling2D(pool_size=(2, 2)),
+    #     keras.layers.Dropout(0.25),
+    #     keras.layers.Flatten(),
+    #     keras.layers.Dense(512),
+    #     keras.layers.Activation('relu'),
+    #     keras.layers.Dropout(0.5),
+    #     keras.layers.Dense(len(names)),
+    #     keras.layers.Activation('softmax')
+    # ])
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
