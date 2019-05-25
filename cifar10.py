@@ -41,7 +41,7 @@ def main():
         Flatten(),
         Dense(4096, activation='relu'),
         Dense(4096, activation='relu'),
-        Dense(len(names), activation='relu')
+        Dense(len(names), activation='softmax')
     ])
     model.compile(optimizer='adam',
                   loss='sparse_categorical_crossentropy',
