@@ -7,58 +7,83 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
-from tensorflow.keras.layers import Dense, Activation, Dropout, Flatten, Conv2D, MaxPooling2D
+from tensorflow.keras.layers import Dense, Activation, Dropout, Flatten, Conv2D, MaxPooling2D, BatchNormalization
 
 import data.cifar10
 
 
 def main():
     (train_images, train_labels, _), (test_images, test_labels,
-                                      _) = data.cifar10.load_data()
+            _) = data.cifar10.load_data()
     names = data.cifar10.load_class_name()
+    # model = keras.Sequential([
+    #     Conv2D(64, (3, 3),
+    #            input_shape=(32, 32, 3),
+    #            padding='same',
+    #            activation='relu'),
+    #     Conv2D(64, (3, 3), activation='relu', padding='same'),
+    #     MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
+    #     Conv2D(128, (3, 3), activation='relu', padding='same'),
+    #     Conv2D(128, (3, 3), activation='relu', padding='same'),
+    #     MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
+    #     Conv2D(256, (3, 3), activation='relu', padding='same'),
+    #     Conv2D(256, (3, 3), activation='relu', padding='same'),
+    #     Conv2D(256, (3, 3), activation='relu', padding='same'),
+    #     MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
+    #     Conv2D(512, (3, 3), activation='relu', padding='same'),
+    #     Conv2D(512, (3, 3), activation='relu', padding='same'),
+    #     Conv2D(512, (3, 3), activation='relu', padding='same'),
+    #     MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
+    #     Conv2D(512, (3, 3), activation='relu', padding='same'),
+    #     Conv2D(512, (3, 3), activation='relu', padding='same'),
+    #     Conv2D(512, (3, 3), activation='relu', padding='same'),
+    #     MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
+    #     Flatten(),
+    #     Dense(4096, activation='relu'),
+    #     Dense(4096, activation='relu'),
+    #     Dense(len(names), activation='softmax')
+    # ])
     model = keras.Sequential([
-        Conv2D(64, (3, 3),
-               input_shape=(32, 32, 3),
-               padding='same',
-               activation='relu'),
-        Conv2D(64, (3, 3), activation='relu', padding='same'),
-        MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
-        Conv2D(128, (3, 3), activation='relu', padding='same'),
-        Conv2D(128, (3, 3), activation='relu', padding='same'),
-        MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
-        Conv2D(256, (3, 3), activation='relu', padding='same'),
-        Conv2D(256, (3, 3), activation='relu', padding='same'),
-        Conv2D(256, (3, 3), activation='relu', padding='same'),
-        MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
-        Conv2D(512, (3, 3), activation='relu', padding='same'),
-        Conv2D(512, (3, 3), activation='relu', padding='same'),
-        Conv2D(512, (3, 3), activation='relu', padding='same'),
-        MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
-        Conv2D(512, (3, 3), activation='relu', padding='same'),
-        Conv2D(512, (3, 3), activation='relu', padding='same'),
-        Conv2D(512, (3, 3), activation='relu', padding='same'),
-        MaxPooling2D(pool_size=(2, 2), strides=(2, 2)),
+        Conv2D(32, (3, 3), input_shape=(32, 32, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        Conv2D(32, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        MaxPooling2D(pool_size=(2, 2)),
+        Dropout(0.2)
+
+        Conv2D(64, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        Conv2D(64, (3, 3), padding='same', activation='relu'),
+        BatchNormalization()
+        MaxPooling2D(pool_size=(2, 2)),
+        Dropout(0.3),
+
+        Conv2D(128, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        Conv2D(128, (3, 3), padding='same', activation='relu'),
+        BatchNormalization()
+        MaxPooling2D(pool_size=(2, 2)),
+        Dropout(0.4),
+
         Flatten(),
-        Dense(4096, activation='relu'),
-        Dense(4096, activation='relu'),
         Dense(len(names), activation='softmax')
-    ])
+        ])
     model.compile(optimizer='adam',
-                  loss='sparse_categorical_crossentropy',
-                  metrics=['accuracy'])
+            loss='sparse_categorical_crossentropy',
+            metrics=['accuracy'])
     file_path = ".{}_log/{}".format(__file__.strip("./").strip(".py"), time())
     tensorboard = keras.callbacks.TensorBoard(log_dir=file_path)
     data_save = keras.callbacks.CSVLogger('{}/log.csv'.format(file_path),
-                                          append=True,
-                                          separator=',')
+            append=True,
+            separator=',')
     model_save = keras.callbacks.ModelCheckpoint(
-        '{}/{{epoch:05}}.h5'.format(file_path), period=10)
+            '{}/{{epoch:05}}.h5'.format(file_path), period=50)
     model.summary()
     model.fit(train_images,
-              train_labels,
-              epochs=100,
-              callbacks=[tensorboard, model_save, data_save],
-              validation_data=(test_images, test_labels))
+            train_labels,
+            epochs=100,
+            callbacks=[tensorboard, model_save, data_save],
+            validation_data=(test_images, test_labels))
 
 
 if __name__ == "__main__":
