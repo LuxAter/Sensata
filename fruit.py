@@ -40,7 +40,7 @@ def main():
         MaxPooling2D(pool_size=(2, 2)),
         Dropout(0.4),
         Flatten(),
-        Dense(256, activatoin='relu'),
+        Dense(len(names)*2, activation='relu'),
         Dense(len(names), activation='softmax')
     ])
     model.compile(optimizer='adam',

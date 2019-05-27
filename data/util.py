@@ -170,12 +170,11 @@ class Generator(keras.utils.Sequence):
         self.indexes = np.arange(len(self.files))
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
-        print(self.indexes)
 
     def __data(self, files):
         x = np.empty((self.batch_size, *self.dim))
         y = np.empty((self.batch_size), dtype=int)
         for i, ID in enumerate(files):
             x[i,] = plt.imread(files[i]).astype(np.float64) / 255.0
-            # y[i] = self.labels[i]
+            y[i] = self.labels[i]
         return x, y
