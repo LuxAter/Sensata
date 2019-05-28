@@ -162,8 +162,8 @@ class Generator(keras.utils.Sequence):
     def __getitem__(self, idx):
         indexes = self.indexes[idx * self.batch_size:(idx + 1) *
                                self.batch_size]
-        files_tmp = [self.files[k] for k in indexes]
-        x, y = self.__data(files_tmp)
+        # files_tmp = [self.files[k] for k in indexes]
+        x, y = self.__data(indexes)
         return x, y
 
     def on_epoch_end(self):
@@ -171,10 +171,10 @@ class Generator(keras.utils.Sequence):
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
 
-    def __data(self, files):
+    def __data(self, ids):
         x = np.empty((self.batch_size, *self.dim))
         y = np.empty((self.batch_size), dtype=int)
-        for i, ID in enumerate(files):
-            x[i,] = plt.imread(files[i]).astype(np.float64) / 255.0
-            y[i] = self.labels[i]
+        for i, idx in enumerate(ids):
+            x[i,] = plt.imread(self.files[idx]).astype(np.float64) / 255.0
+            y[i] = self.labels[idx]
         return x, y

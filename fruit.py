@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import sys
+
 from time import time
 from math import ceil
 
@@ -11,12 +13,28 @@ import matplotlib.pyplot as plt
 
 import data.fruit
 
+def predicter():
+    names = data.fruit.load_class_name()
+    model = keras.models.load_model(sys.argv[1])
+    files, labels, _ = data.fruit.load_test_data()
+    files = [str(x) for x in files]
+    while True:
+        file_path = np.random.choice(files)
+        index = files.index(file_path)
+        img = plt.imread(files[index]).astype(np.float64) / 255.0
+        key = labels[index]
+        res = list(model.predict(np.expand_dims(img, axis=0)))
+        loss = model.evaluate(np.expand_dims(img, axis=0), np.expand_dims(labels[index], axis=0))
+        plt.imshow(img)
+        plt.title("{}[{}]".format(names[res.index(max(res))], names[key]))
+        plt.show()
+
 
 def main():
     names = data.fruit.load_class_name()
-    print(len(names))
     train_gen = data.fruit.generator(256)
     test_gen = data.fruit.generator(256, validation=True)
+
     model = keras.Sequential([
         Conv2D(32, (3, 3),
                input_shape=(100, 100, 3),
@@ -61,4 +79,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1:
+        predicter()
+    else:
+        main()
