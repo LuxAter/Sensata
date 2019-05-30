@@ -13,9 +13,10 @@ import matplotlib.pyplot as plt
 
 import data.fruit
 
-def predicter():
+def predicter(model = None):
     names = data.fruit.load_class_name()
-    model = keras.models.load_model(sys.argv[1])
+    if model is None:
+        model = keras.models.load_model(sys.argv[1])
     files, labels, _ = data.fruit.load_test_data()
     files = [str(x) for x in files]
     while True:
@@ -23,7 +24,8 @@ def predicter():
         index = files.index(file_path)
         img = plt.imread(files[index]).astype(np.float64) / 255.0
         key = labels[index]
-        res = list(model.predict(np.expand_dims(img, axis=0)))
+        res = model.predict(np.expand_dims(img, axis=0)).tolist()[0]
+        print(res, max(res), res.index(max(res)))
         loss = model.evaluate(np.expand_dims(img, axis=0), np.expand_dims(labels[index], axis=0))
         plt.imshow(img)
         plt.title("{}[{}]".format(names[res.index(max(res))], names[key]))
@@ -32,8 +34,8 @@ def predicter():
 
 def main():
     names = data.fruit.load_class_name()
-    train_gen = data.fruit.generator(256)
-    test_gen = data.fruit.generator(256, validation=True)
+    train_gen = data.fruit.generator(128)
+    test_gen = data.fruit.generator(128, validation=True)
 
     model = keras.Sequential([
         Conv2D(32, (3, 3),
@@ -72,11 +74,12 @@ def main():
     model_save = keras.callbacks.ModelCheckpoint(
         '{}/{{epoch:05}}.h5'.format(file_path), period=50)
     model.summary()
-    model.fit_generator(train_gen,
-                        epochs=100,
-                        callbacks=[tensorboard, model_save, data_save],
-                        validation_data=test_gen)
-
+    predicter(model)
+    # model.fit_generator(train_gen,
+    #                     epochs=10,
+    #                     callbacks=[tensorboard, model_save, data_save],
+    #                     validation_data=test_gen)
+    # predicter(model)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
