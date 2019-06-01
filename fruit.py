@@ -25,7 +25,6 @@ def predicter(model = None):
         img = plt.imread(files[index]).astype(np.float64) / 255.0
         key = labels[index]
         res = model.predict(np.expand_dims(img, axis=0)).tolist()[0]
-        print(res, max(res), res.index(max(res)))
         loss = model.evaluate(np.expand_dims(img, axis=0), np.expand_dims(labels[index], axis=0))
         plt.imshow(img)
         plt.title("{}[{}]".format(names[res.index(max(res))], names[key]))
@@ -74,12 +73,10 @@ def main():
     model_save = keras.callbacks.ModelCheckpoint(
         '{}/{{epoch:05}}.h5'.format(file_path), period=50)
     model.summary()
-    predicter(model)
-    # model.fit_generator(train_gen,
-    #                     epochs=10,
-    #                     callbacks=[tensorboard, model_save, data_save],
-    #                     validation_data=test_gen)
-    # predicter(model)
+    model.fit_generator(train_gen,
+                        epochs=100,
+                        callbacks=[tensorboard, model_save, data_save],
+                        validation_data=test_gen)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
