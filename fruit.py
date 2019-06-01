@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 
 import data.fruit
 
+from base import ImgClassifier
+
 def predicter(model = None):
     names = data.fruit.load_class_name()
     if model is None:
@@ -32,6 +34,9 @@ def predicter(model = None):
 
 
 def main():
+    classifier = ImgClassifier(data.fruit)
+    classifier.predict()
+    return False
     names = data.fruit.load_class_name()
     train_gen = data.fruit.generator(128)
     test_gen = data.fruit.generator(128, validation=True)
@@ -79,7 +84,7 @@ def main():
                         validation_data=test_gen)
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        predicter()
-    else:
-        main()
+    # if len(sys.argv) > 1:
+    #     predicter()
+    # else:
+    main()
