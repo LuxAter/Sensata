@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 
-from time import time
-
-import tensorflow as tf
 from tensorflow import keras
-import numpy as np
-import matplotlib.pyplot as plt
-
-from tensorflow.keras.layers import Dense, Activation, Dropout, Flatten, Conv2D, MaxPooling2D, BatchNormalization
-
+from tensorflow.keras.layers import *
 import data.cifar10
+
+from base import ImgClassifier
 
 
 def main():
-    (train_images, train_labels, _), (test_images, test_labels,
-                                      _) = data.cifar10.load_data()
     names = data.cifar10.load_class_name()
-    model = keras.Sequential([
+    cifar10_class = ImgClassifier(data.cifar10)
+    if cifar10_class.process_vars():
+        cifar10_class.predict()
+        return
+    cifar10_class.model = keras.Sequential([
         Conv2D(32, (3, 3),
                input_shape=(32, 32, 3),
                padding='same',
@@ -42,22 +39,10 @@ def main():
         Dense(256, activation='relu'),
         Dense(len(names), activation='softmax')
     ])
-    model.compile(optimizer='adam',
-                  loss='sparse_categorical_crossentropy',
-                  metrics=['accuracy'])
-    file_path = ".{}_log/{}".format(__file__.strip("./").strip(".py"), time())
-    tensorboard = keras.callbacks.TensorBoard(log_dir=file_path)
-    data_save = keras.callbacks.CSVLogger('{}/log.csv'.format(file_path),
-                                          append=True,
-                                          separator=',')
-    model_save = keras.callbacks.ModelCheckpoint(
-        '{}/{{epoch:05}}.h5'.format(file_path), period=50)
-    model.summary()
-    model.fit(train_images,
-              train_labels,
-              epochs=100,
-              callbacks=[tensorboard, model_save, data_save],
-              validation_data=(test_images, test_labels))
+    cifar10_class.model.compile(optimizer='adam',
+                                loss='sparse_categorical_crossentropy',
+                                metrics=['accuracy'])
+    cifar10_class.train()
 
 
 if __name__ == "__main__":

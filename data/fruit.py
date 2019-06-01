@@ -71,7 +71,6 @@ def generator(batch_size, validation=False):
         Y_train = [
             keys_train.index('/'.join(str(x).split('/')[:-1])) for x in X_train
         ]
-        print(Y_train)
         return util.Generator(X_train,
                               Y_train,
                               batch_size=batch_size,

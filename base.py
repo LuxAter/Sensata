@@ -84,8 +84,8 @@ class ImgClassifier(object):
             self.zip()
 
     def train_generator(self):
-        train_gen = data.fruit.generator(self.batch_size)
-        test_gen = data.fruit.generator(self.batch_size, validation=True)
+        train_gen = self.data.generator(self.batch_size)
+        test_gen = self.data.generator(self.batch_size, validation=True)
         if test_gen:
             self.model.fit_generator(train_gen,
                                      epochs=self.max_epoch,
