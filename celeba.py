@@ -1,21 +1,58 @@
 #!/usr/bin/env python3
 
-from time import time
-
-import tensorflow as tf
 from tensorflow import keras
-# import numpy as np
-import matplotlib.pyplot as plt
-
+from tensorflow.keras.layers import *
 import data.celeba
 
+from base import ImgMultiClassifier
+
+
 def main():
-    train_gen = data.celeba.generator(64)
-    x, y = train_gen.__getitem__(0)
-    for i in range(len(x)):
-        plt.imshow(x[i])
-        plt.show()
-    # test_gen = data.celeba.generator(256, validation=True)
+    names = data.celeba.load_class_name()
+    celeba_class = ImgMultiClassifier(data.celeba)
+    if celeba_class.process_vars():
+        celeba_class.predict()
+        return
+    celeba_class.model = keras.Sequential([
+        Conv2D(32, (3, 3),
+               input_shape=(218, 178, 3),
+               padding='same',
+               activation='relu'),
+        BatchNormalization(),
+        Conv2D(32, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        MaxPooling2D(pool_size=(2, 2)),
+        Dropout(0.2),
+        Conv2D(64, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        Conv2D(64, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        MaxPooling2D(pool_size=(2, 2)),
+        Dropout(0.3),
+        Conv2D(128, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        Conv2D(128, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        MaxPooling2D(pool_size=(2, 2)),
+        Dropout(0.4),
+        Conv2D(256, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        Conv2D(256, (3, 3), padding='same', activation='relu'),
+        BatchNormalization(),
+        MaxPooling2D(pool_size=(2, 2)),
+        Dropout(0.5),
+        Flatten(),
+        Dense(1024, activation='relu'),
+        Dense(1024, activation='relu'),
+        Dense(512, activation='relu'),
+        Dense(512, activation='relu'),
+        Dense(len(names), activation='softmax')
+    ])
+    celeba_class.model.compile(optimizer='adam',
+                               loss='binary_crossentropy',
+                               metrics=['accuracy'])
+    celeba_class.train()
+
 
 if __name__ == "__main__":
     main()

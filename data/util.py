@@ -173,8 +173,14 @@ class Generator(keras.utils.Sequence):
 
     def __data(self, ids):
         x = np.empty((self.batch_size, *self.dim))
-        y = np.empty((self.batch_size), dtype=int)
+        if isinstance(self.labels[0], np.ndarray):
+            y = np.empty((self.batch_size, len(self.labels[0])), dtype=int)
+        else:
+            y = np.empty((self.batch_size), dtype=int)
         for i, idx in enumerate(ids):
             x[i,] = plt.imread(self.files[idx]).astype(np.float64) / 255.0
-            y[i] = self.labels[idx]
+            if isinstance(self.labels[idx], np.ndarray):
+                y[i,] = self.labels[idx]
+            else:
+                y[i] = self.labels[idx]
         return x, y
