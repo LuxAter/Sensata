@@ -9,7 +9,7 @@ from base import ImgMultiClassifier
 
 def main():
     names = data.celeba.load_class_name()
-    celeba_class = ImgMultiClassifier(data.celeba)
+    celeba_class = ImgMultiClassifier(data.celeba, batch_size=16)
     if celeba_class.process_vars():
         celeba_class.predict()
         return
@@ -48,7 +48,7 @@ def main():
         Dense(512, activation='relu'),
         Dense(len(names), activation='softmax')
     ])
-    celeba_class.model.compile(optimizer='adam',
+    celeba_class.model.compile(optimizer='rmsprop',
                                loss='binary_crossentropy',
                                metrics=['accuracy'])
     celeba_class.train()

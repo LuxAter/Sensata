@@ -28,10 +28,10 @@ def load_class_name():
 def generator(batch_size, validation=False):
     util.kaggle_and_extract_all("./dataset/CELEBA",
                                 "jessicali9530/celeba-dataset")
-    X_train = sorted(Path('./dataset/CELEBA/img_align_celeba').glob("*.jpg"))
     csv_data = list(csv.reader(open('./dataset/CELEBA/list_attr_celeba.csv')))
     keys_train = csv_data[0][1:]
-    Y_train = [np.asarray(x[1:]) for x in csv_data[1:]]
+    Y_train = [(np.asarray(x[1:], dtype=np.float64)+1.0)/2.0 for x in csv_data[1:]]
+    X_train = ["./dataset/CELEBA/img_align_celeba/{}".format(x[0]) for x in csv_data[1:]]
     return util.Generator(X_train,
                           Y_train,
                           batch_size=batch_size,
