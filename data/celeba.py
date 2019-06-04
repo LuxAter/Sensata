@@ -14,7 +14,7 @@ def load_train_data():
     np.random.seed(2019)
     Y_all = [(np.asarray(x[1:], dtype=np.float64)+1.0)/2.0 for x in csv_data[1:]]
     X_all = ["./dataset/CELEBA/img_align_celeba/{}".format(x[0]) for x in csv_data[1:]]
-    train_inds = np.random.choice(range(len(Y_all)), len(Y_all) * 0.9)
+    train_inds = np.random.choice(range(len(Y_all)), int(np.floor(len(Y_all) * 0.9)))
     return [x for i, x in enumerate(X_all) if i in train_inds], [x for i, x in enumerate(Y_all) if i in train_inds]
 
 
@@ -47,7 +47,7 @@ def load_class_name():
     np.random.seed(2019)
     Y_all = [(np.asarray(x[1:], dtype=np.float64)+1.0)/2.0 for x in csv_data[1:]]
     X_all = ["./dataset/CELEBA/img_align_celeba/{}".format(x[0]) for x in csv_data[1:]]
-    train_inds = np.random.choice(range(len(Y_all)), len(Y_all) * 0.9)
+    train_inds = np.random.choice(range(len(Y_all)), int(np.floor(len(Y_all) * 0.9)))
     if validation:
         return util.Generator([x for i, x in enumerate(X_all) if i not in train_inds],
                 [y for i, y in enumerate(Y_all) if i not in train_inds],
