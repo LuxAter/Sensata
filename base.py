@@ -150,8 +150,8 @@ class ImgMultiClassifier(object):
         if self.model is None:
             self.model = keras.models.load_model(argv[1])
         count = int(argv[2]) if len(argv) > 2 else 10
-        imgs, labels, _ = self.data.load_test_data()
-        if isinstance(imgs[0], Path):
+        imgs, labels = self.data.load_test_data()
+        if isinstance(imgs[0], Path) or isinstance(imgs[0], str):
             files = [str(x) for x in imgs]
             for i in range(count):
                 index = np.random.randint(0, len(files))
@@ -160,11 +160,8 @@ class ImgMultiClassifier(object):
                 res = self.model.predict(np.expand_dims(img,
                                                         axis=0)).tolist()[0]
                 plt.imshow(img)
-                res_vals = ",".join(
-                    [names[j] for j, v in enumerate(res) if v >= 0.85])
-                key_vals = ",".join(
-                    [names[j] for j, v in enumerate(key) if v >= 0.85])
-                plt.title("{}[{}]".format(res_vals, key_vals))
+                res = [1 if x >= 0.01 else 0 for x in res]
+                plt.title("{}[{}]".format(''.join([str(x) for x in res]), ''.join([str(int(x)) for x in key])))
                 plt.show()
         else:
             for i in range(count):
