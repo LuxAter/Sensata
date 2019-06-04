@@ -39,10 +39,10 @@ def load_class_name():
         'r')))[0][1:]
 
 
-    def generator(batch_size, validation=False):
-        util.kaggle_and_extract_all("./dataset/CELEBA",
-                "jessicali9530/celeba-dataset")
-        csv_data = list(csv.reader(open('./dataset/CELEBA/list_attr_celeba.csv')))
+def generator(batch_size, validation=False):
+    util.kaggle_and_extract_all("./dataset/CELEBA",
+            "jessicali9530/celeba-dataset")
+    csv_data = list(csv.reader(open('./dataset/CELEBA/list_attr_celeba.csv')))
     keys_train = csv_data[0][1:]
     np.random.seed(2019)
     Y_all = [(np.asarray(x[1:], dtype=np.float64)+1.0)/2.0 for x in csv_data[1:]]

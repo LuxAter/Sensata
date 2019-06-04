@@ -9,7 +9,7 @@ from base import ImgMultiClassifier
 
 def main():
     names = data.celeba.load_class_name()
-    celeba_class = ImgMultiClassifier(data.celeba)
+    celeba_class = ImgMultiClassifier(data.celeba, batch_size=8)
     if celeba_class.process_vars():
         celeba_class.predict()
         return
