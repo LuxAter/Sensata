@@ -41,7 +41,7 @@ def main():
         Dense(128, activation='relu'),
         Dense(128, activation='relu'),
         Dense(len(names), activation='softmax')
-        ])
+    ])
     # celeba_class.model = keras.Sequential([
     #     Conv2D(32, (3, 3),
     #            input_shape=(218, 178, 3),
